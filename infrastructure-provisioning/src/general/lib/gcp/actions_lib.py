@@ -553,12 +553,12 @@ class GCPActions:
             traceback.print_exc(file=sys.stdout)
 
     def set_role_to_service_account(self, service_account_name, role_name, role_type='custom'):
-        request = GCPActions().service_resource.projects().getIamPolicy(resource=self.project, body={})
-        print('log1')
-        print(request)
-        project_policy = request.execute()
-        print('log2')
-        print(project_policy)
+        #request = GCPActions().service_resource.projects().getIamPolicy(resource=self.project, body={})
+        #print('log1')
+        #print(request)
+        #project_policy = request.execute()
+        #print('log2')
+        #print(project_policy)
         service_account_email = "{}@{}.iam.gserviceaccount.com".format(service_account_name, self.project)
         print('log3')
         print(service_account_email)
