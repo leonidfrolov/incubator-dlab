@@ -553,14 +553,9 @@ class GCPActions:
             traceback.print_exc(file=sys.stdout)
 
     def set_role_to_service_account(self, service_account_name, role_name, role_type='custom'):
-        #request = GCPActions().service_resource.projects().getIamPolicy(resource=self.project, body={})
-        #print('log1')
-        #print(request)
-        #project_policy = request.execute()
-        #print('log2')
-        #print(project_policy)
+        request = GCPActions().service_resource.projects().getIamPolicy(resource=self.project, body={})
+        project_policy = request.execute()
         service_account_email = "{}@{}.iam.gserviceaccount.com".format(service_account_name, self.project)
-        print('log3')
         print(service_account_email)
         params = {
             "role": "projects/{}/roles/{}".format(self.project, role_name.replace('-', '_')),
@@ -568,20 +563,15 @@ class GCPActions:
                 "serviceAccount:{}".format(service_account_email)
             ]
         }
-        print('log4')
         print(params)
         if role_type == 'predefined':
             params['role'] = "roles/{}".format(role_name)
         project_policy['bindings'].append(params)
-        print('log5')
-        print(project_policy)
         params = {
             "policy": {
                 "bindings": project_policy['bindings']
             }
         }
-        print('log6')
-        print(params)
         request = self.service_resource.projects().setIamPolicy(resource=self.project, body=params)
         try:
             return request.execute()
