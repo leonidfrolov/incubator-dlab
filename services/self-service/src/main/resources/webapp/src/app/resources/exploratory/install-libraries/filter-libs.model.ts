@@ -1,4 +1,4 @@
-/*!
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -17,11 +17,20 @@
  * under the License.
  */
 
-$modal-text-color: #718aa5;
-$modal-header-color: #f6fafe;
+export class FilterLibsModel {
+  constructor(
+    public name: string,
+    public group: Array<any>,
+    public resource: Array<any>,
+    public resourceType: Array<any>,
+    public status: Array<any>,
+  ) { }
 
-$brand-color: #4ab8dc;
-$blue-grey-color: #718ba6;
-$dark-grey-color: #455c74;
-
-$default-font-size: 14px;
+  resetFilterLibs(): void {
+    this.name = '';
+    this.group = [];
+    this.resource = [];
+    this.resourceType = [];
+    this.status = [];
+  }
+}
