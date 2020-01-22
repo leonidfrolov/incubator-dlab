@@ -70,7 +70,8 @@ if __name__ == "__main__":
                                        "project_tag": notebook_config['project_tag'],
                                        "endpoint_tag": notebook_config['endpoint_tag'],
                                        "Exploratory": notebook_config['exploratory_name'],
-                                       os.environ['conf_billing_tag_key']: os.environ['conf_billing_tag_value']}
+                                       os.environ['conf_billing_tag_key']: os.environ['conf_billing_tag_value'],
+                                       os.environ['conf_tag_resource_id']:'{}:{}'.format(notebook_config['service_base_name'],notebook_config['expected_image_name'])}
         else:
             notebook_config['expected_image_name'] = '{0}-{1}-{2}-notebook-image'.format(
                 notebook_config['service_base_name'],
@@ -81,7 +82,8 @@ if __name__ == "__main__":
                                        "User": notebook_config['user_name'],
                                        "endpoint_tag": notebook_config['endpoint_tag'],
                                        "Exploratory": notebook_config['exploratory_name'],
-                                       os.environ['conf_billing_tag_key']: os.environ['conf_billing_tag_value']}
+                                       os.environ['conf_billing_tag_key']: os.environ['conf_billing_tag_value'],
+                                       os.environ['conf_tag_resource_id']:'{}:{}'.format(notebook_config['service_base_name'],notebook_config['expected_image_name'])}
         notebook_config['notebook_image_name'] = str(os.environ.get('notebook_image_name'))
         notebook_config['security_group_name'] = '{}-{}-nb-sg'.format(notebook_config['service_base_name'],
                                                                       notebook_config['project_name'])

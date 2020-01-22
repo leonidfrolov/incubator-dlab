@@ -53,7 +53,8 @@ if __name__ == "__main__":
                               "endpoint_tag": image_conf['endpoint_tag'],
                               "Image": image_conf['image_name'],
                               "FIN": image_conf['full_image_name'],
-                              os.environ['conf_billing_tag_key']: os.environ['conf_billing_tag_value']}
+                              os.environ['conf_billing_tag_key']: os.environ['conf_billing_tag_value'],
+                              os.environ['conf_tag_resource_id']:'{}:{}'.format(image_conf['service_base_name'],image_conf['full_image_name'])}
 
         instance_hostname = AzureMeta().get_private_ip_address(image_conf['resource_group_name'],
                                                                image_conf['instance_name'])
