@@ -1,6 +1,6 @@
 {
-  "id": "lfr-test",
-  "realm": "lfr-test",
+  "id": "realm-name",
+  "realm": "realm-name",
   "notBefore": 0,
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
