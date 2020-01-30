@@ -30,20 +30,35 @@ from dlab.common_lib import ensure_step
 from dlab.edge_lib import install_nginx_lua
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--user', type=str, default='')
+parser.add_argument('--os_user', type=str, default='')
 parser.add_argument('--local_ip_address', type=str, default='')
 parser.add_argument('--keyfile', type=str, default='')
-#parser.add_argument('--gcp_subnet_name', type=str, default='')
-#parser.add_argument('--service_base_name', type=str, default='')
-#parser.add_argument('--gcp_vpc_name', type=str, default='')
 parser.add_argument('--keycloak_realm_name', type=str, default='')
 parser.add_argument('--keycloak_user', type=str, default='')
 parser.add_argument('--keycloak_user_password', type=str, default='')
-parser.add_argument('--step_cert_sans', type=str, default='')
 args = parser.parse_args()
 
 keycloak_version = 8.0.1
-templates_dir =
+templates_dir = ./templates/
+
+def configure_keycloak()
+    sudo('wget https://downloads.jboss.org/keycloak/' + keycloak_version + '/keycloak-' + keycloak_version + '.tar.gz')
+    sudo('tar -zxvf /tmp/keycloak-' + keycloak_version + '.tar.gz -C /opt/')
+    sudo('ln -s /opt/keycloak-' + keycloak_version + ' /opt/keycloak')
+    sudo('chown ' + args.os_user + ':' + args.os_user + ' -R /opt/keycloak-' + keycloak_version)
+    sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
+    put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
+    sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
+    sudo('bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/' + args.keycloak_realm_name + '-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING -b ' + args.local_ip_address) #also starts standalone mode
+    put(templates_dir + 'keycloak.conf', '/etc/keycloak/keycloak.conf')
+    put(templates_dir + 'keycloak-server.service', '/etc/systemd/system/keycloak.service')
+    sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
+    sudo("systemctl daemon-reload")
+    sudo("systemctl enable keycloak-server")
+
+def configure_nginx()
+
+
 if __name__ == "__main__":
     local_log_filename = "{}_{}_{}.log".format(os.environ['conf_resource'],
                                                os.environ['project_name'],
@@ -57,7 +72,7 @@ if __name__ == "__main__":
     try:
         env['connection_attempts'] = 100
         env.key_filename = [args.keyfile]
-        env.host_string = '{}@{}'.format(args.user, args.ip_address)
+        env.host_string = '{}@{}'.format(args.os_user, args.ip_address)
     except Exception as err:
         print("Failed establish connection. Excpeption: " + str(err))
         sys.exit(1)
@@ -65,21 +80,14 @@ if __name__ == "__main__":
     print("Install Java")
     ensure_jre_jdk(args.user)
 
-
     try:
-        install_keycloak()
+        configure_keycloak()
     except Exception as err:
         print("Failed keycloak install: " + str(err))
         sys.exit(1)
 
-
-
-def install_keycloak()
-    sudo('wget https://downloads.jboss.org/keycloak/' + keycloak_version + '/keycloak-' + keycloak_version + '.tar.gz')
-    sudo('tar -zxvf /tmp/keycloak-' + keycloak_version + '.tar.gz -C /opt/')
-    sudo('ln -s /opt/keycloak-' + keycloak_version + ' /opt/keycloak')
-    sudo('chown ' + args.user + ':' + args.user + ' -R /opt/keycloak-' + keycloak_version)
-    sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
-    put(templates_dir + 'realm.json', '/tmp/' + keycloak_realm_name + '-realm.json')
-    sudo('bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/' + keycloak_realm_name + '-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING')
-    sudo('/opt/keycloak/bin/standalone.sh -b ' + args.local_ip_address)
+    try:
+        configure_nginx()
+    except Exception as err:
+        print("Failed nginx install: " + str(err))
+        sys.exit(1)
