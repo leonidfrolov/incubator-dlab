@@ -89,7 +89,7 @@ if __name__ == "__main__":
         local('scp -i {} {}realm.json {}@{}:/tmp/{}-realm.json'.format(args.keyfile, templates_dir, args.os_user,
                                                                        args.public_ip_address,
                                                                        args.keycloak_realm_name))
-        local('scp -i {} {}keycloak-server.service {}@{}:/etc/systemd/system/'.format(args.keyfile, templates_dir,
+        local('scp -i {} {}keycloak.service {}@{}:/etc/systemd/system/'.format(args.keyfile, templates_dir,
                                                                                                       args.os_user,
                                                                                                       args.public_ip_address))
         try:
