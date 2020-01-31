@@ -58,11 +58,8 @@ def configure_keycloak():
     sudo('ln -s /opt/keycloak-' + keycloak_version + ' /opt/keycloak')
     sudo('chown ' + args.os_user + ':' + args.os_user + ' -R /opt/keycloak-' + keycloak_version)
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
-    put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
-    put(templates_dir + 'keycloak.conf', '/etc/keycloak/keycloak.conf')
     sudo("sed -i 's|WILDFLY_BIND=|WILDFLY_BIND=" + private_ip_address + "|' /etc/keycloak/keycloak.conf")
-    put(templates_dir + 'keycloak-server.service', '/etc/systemd/system/keycloak.service')
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
     sudo("systemctl daemon-reload")
     sudo("systemctl enable keycloak-server")
@@ -90,7 +87,10 @@ if __name__ == "__main__":
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
-            env.host_string = '{}@{}'.format(args.os_user, private_ip_address)
+            env.host_string = '{}@{}'.format(args.os_user, args.public_ip_address)
+            local('scp {}realm.json -i {} {}@{}:/tmp/{}-realm.json'.format(templates_dir, args.keyfile, args.os_user,args.public_ip_address,args.keycloak_realm_name)
+            local('scp {}keycloak.conf -i {} {}@{}:/etc/keycloak/keycloak.conf'.format(templates_dir, args.keyfile,args.os_user,args.public_ip_address)
+            local('scp {}keycloak-server.service -i {} {}@{}:/etc/systemd/system/keycloak.service'.format(templates_dir,args.keyfile,args.os_user,args.public_ip_address)
         except Exception as err:
             print("Failed establish connection. Excpeption: " + str(err))
             sys.exit(1)
@@ -98,7 +98,10 @@ if __name__ == "__main__":
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
-            env.host_string = '{}@{}'.format(args.os_user, args.public_ip_address)
+            env.host_string = '{}@{}'.format(args.os_user, private_ip_address)
+            put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
+            put(templates_dir + 'keycloak.conf', '/etc/keycloak/keycloak.conf')
+            put(templates_dir + 'keycloak-server.service', '/etc/systemd/system/keycloak.service')
         except Exception as err:
             print("Failed establish connection. Excpeption: " + str(err))
             sys.exit(1)
