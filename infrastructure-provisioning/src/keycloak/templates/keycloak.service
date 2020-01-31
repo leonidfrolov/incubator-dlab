@@ -5,12 +5,11 @@ Before=httpd.service
 
 [Service]
 Environment=LAUNCH_JBOSS_IN_BACKGROUND=1
-EnvironmentFile=-/etc/keycloak/keycloak.conf
 User=OS_USER
 Group=OS_USER
 LimitNOFILE=102642
 PIDFile=/var/run/keycloak/keycloak.pid
-ExecStart=/opt/keycloak/bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=$REALM_JSON -Dkeycloak.migration.strategy=IGNORE_EXISTING -b $WILDFLY_BIND
+ExecStart=/opt/keycloak/bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=keycloak_realm_name -Dkeycloak.migration.strategy=IGNORE_EXISTING -b private_ip_address
 StandardOutput=null
 
 [Install]
