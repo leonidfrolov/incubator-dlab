@@ -88,9 +88,9 @@ if __name__ == "__main__":
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
             env.host_string = '{}@{}'.format(args.os_user, args.public_ip_address)
-            local('scp {}realm.json -i {} {}@{}:/tmp/{}-realm.json'.format(templates_dir, args.keyfile, args.os_user,args.public_ip_address,args.keycloak_realm_name)
-            local('scp {}keycloak.conf -i {} {}@{}:/etc/keycloak/keycloak.conf'.format(templates_dir, args.keyfile,args.os_user,args.public_ip_address)
-            local('scp {}keycloak-server.service -i {} {}@{}:/etc/systemd/system/keycloak.service'.format(templates_dir,args.keyfile,args.os_user,args.public_ip_address)
+            local('scp {}realm.json -i {} {}@{}:/tmp/{}-realm.json'.format(templates_dir, args.keyfile, args.os_user,args.public_ip_address,args.keycloak_realm_name))
+            local('scp {}keycloak.conf -i {} {}@{}:/etc/keycloak/keycloak.conf'.format(templates_dir, args.keyfile,args.os_user,args.public_ip_address))
+            local('scp {}keycloak-server.service -i {} {}@{}:/etc/systemd/system/keycloak.service'.format(templates_dir,args.keyfile,args.os_user,args.public_ip_address))
         except Exception as err:
             print("Failed establish connection. Excpeption: " + str(err))
             sys.exit(1)
