@@ -65,9 +65,9 @@ def configure_keycloak():
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|private_ip_address|" + private_ip_address + "|' /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|keycloak_realm_name|" + args.keycloak_realm_name + "|' /etc/systemd/system/keycloak.service")
-    sudo("systemctl daemon-reload")
-    sudo("systemctl enable keycloak")
-    sudo("systemctl start keycloak")
+#    sudo("systemctl daemon-reload")
+#    sudo("systemctl enable keycloak")
+#    sudo("systemctl start keycloak")
 
 def configure_nginx():
     sudo('apt install -y nginx')
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     try:
-        configure_nginx()
+ #       configure_nginx()
         print("installing nginx")
     except Exception as err:
         print("Failed nginx install: " + str(err))
