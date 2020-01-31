@@ -120,15 +120,15 @@ if __name__ == "__main__":
     ensure_jre_jdk(args.os_user)
 
     try:
-        configure_keycloak()
         print("installing Keycloak")
+        configure_keycloak()
     except Exception as err:
         print("Failed keycloak install: " + str(err))
         sys.exit(1)
 
     try:
-        configure_nginx()
         print("installing nginx")
+        configure_nginx()
     except Exception as err:
         print("Failed nginx install: " + str(err))
         sys.exit(1)
