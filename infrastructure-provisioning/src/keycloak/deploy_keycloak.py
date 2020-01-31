@@ -46,7 +46,7 @@ private_ip_address = "127.0.0.1"
 def ensure_jre_jdk(os_user):
     if not exists('/home/' + os_user + '/.ensure_dir/jre_jdk_ensured'):
         try:
-            sudo('mkdir /home/ubuntu/.ensure_dir')
+            sudo('mkdir -p /home/ubuntu/.ensure_dir')
             sudo('apt-get update')
             sudo('apt-get install -y default-jre')
             sudo('apt-get install -y default-jdk')
@@ -60,7 +60,7 @@ def configure_keycloak():
     sudo('ln -s /opt/keycloak-' + keycloak_version + ' /opt/keycloak')
     sudo('chown ' + args.os_user + ':' + args.os_user + ' -R /opt/keycloak-' + keycloak_version)
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
-    sudo("mkdir /etc/keycloak")
+    sudo("mkdir -p /etc/keycloak")
     sudo("cp /tmp/keycloak.conf /etc/keycloak/keycloak.conf")
     sudo("cp /tmp/keycloak.service /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
