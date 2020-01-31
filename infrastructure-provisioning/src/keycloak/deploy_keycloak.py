@@ -62,8 +62,8 @@ def configure_keycloak():
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
     sudo("cp /tmp/keycloak.service /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
-    sudo("sed -i 's|WILDFLY_BIND|" + private_ip_address + "|' /etc/systemd/system/keycloak.service")
-    sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
+    sudo("sed -i 's|private_ip_address|" + private_ip_address + "|' /etc/systemd/system/keycloak.service")
+    sudo("sed -i 's|keycloak_realm_name|" + args.keycloak_realm_name + "|' /etc/systemd/system/keycloak.service")
     sudo("systemctl daemon-reload")
     sudo("systemctl enable keycloak")
     sudo("systemctl start keycloak")
