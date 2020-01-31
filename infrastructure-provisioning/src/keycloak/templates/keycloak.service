@@ -10,7 +10,7 @@ User=OS_USER
 Group=OS_USER
 LimitNOFILE=102642
 PIDFile=/var/run/keycloak/keycloak.pid
-ExecStart=/opt/keycloak/bin/standalone.sh -b WILDFLY_BIND
+ExecStart=/opt/keycloak/bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/' + args.keycloak_realm_name + '-realm.json -Dkeycloak.migration.strategy=IGNORE_EXISTING -b ' + private_ip_address -b WILDFLY_BIND
 StandardOutput=null
 
 [Install]

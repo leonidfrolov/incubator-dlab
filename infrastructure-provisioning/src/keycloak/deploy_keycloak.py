@@ -66,7 +66,7 @@ def configure_keycloak():
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
     sudo("systemctl daemon-reload")
     sudo("systemctl enable keycloak")
-    sudo('/opt/keycloak/bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/' + args.keycloak_realm_name + '-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING -b ' + private_ip_address) #also starts standalone mode
+    sudo("systemctl start keycloak")
 
 def configure_nginx():
     sudo('apt install -y nginx')
