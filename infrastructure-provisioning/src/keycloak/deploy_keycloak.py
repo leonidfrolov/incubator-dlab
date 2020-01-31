@@ -60,6 +60,7 @@ def configure_keycloak():
     sudo('ln -s /opt/keycloak-' + keycloak_version + ' /opt/keycloak')
     sudo('chown ' + args.os_user + ':' + args.os_user + ' -R /opt/keycloak-' + keycloak_version)
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
+    sudo("cp /tmp/keycloak.service /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
     sudo("sed -i 's|WILDFLY_BIND|" + private_ip_address + "|' /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
@@ -89,7 +90,7 @@ if __name__ == "__main__":
         local('scp -i {} {}realm.json {}@{}:/tmp/{}-realm.json'.format(args.keyfile, templates_dir, args.os_user,
                                                                        args.public_ip_address,
                                                                        args.keycloak_realm_name))
-        local('scp -i {} {}keycloak.service {}@{}:/etc/systemd/system/'.format(args.keyfile, templates_dir,
+        local('scp -i {} {}keycloak.service {}@{}:/tmp/keycloak.service'.format(args.keyfile, templates_dir,
                                                                                                       args.os_user,
                                                                                                       args.public_ip_address))
         try:
@@ -101,7 +102,7 @@ if __name__ == "__main__":
             sys.exit(1)
     else:
         put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
-        put(templates_dir + 'keycloak.service', '/etc/systemd/system/')
+        put(templates_dir + 'keycloak.service', '/tmp/keycloak.service')
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
