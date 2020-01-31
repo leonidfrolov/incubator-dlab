@@ -71,7 +71,7 @@ def configure_keycloak():
 
 def configure_nginx():
     sudo('apt install -y nginx')
-    put(templates_dir + 'nginx.conf', '/etc/nginx/conf.d/nginx.conf')
+    sudo("cp /tmp/nginx.conf /etc/nginx/conf.d/nginx.conf")
     sudo("sed -i 's|external_port|" + external_port + "|' /etc/nginx/conf.d/nginx.conf")
     sudo("sed -i 's|internal_port|" + internal_port + "|' /etc/nginx/conf.d/nginx.conf")
     sudo("sed -i 's|private_ip_address|" + private_ip_address + "|' /etc/nginx/conf.d/nginx.conf")
@@ -94,6 +94,9 @@ if __name__ == "__main__":
         local('scp -i {} {}keycloak.service {}@{}:/tmp/keycloak.service'.format(args.keyfile, templates_dir,
                                                                                                       args.os_user,
                                                                                                       args.public_ip_address))
+        local('scp -i {} {}nginx.conf {}@{}:/tmp/nginx.conf'.format(args.keyfile, templates_dir,
+                                                                                                      args.os_user,
+                                                                                                      args.public_ip_address))
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
@@ -104,6 +107,7 @@ if __name__ == "__main__":
     else:
         put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
         put(templates_dir + 'keycloak.service', '/tmp/keycloak.service')
+        put(templates_dir + 'nginx.conf', '/tmp/nginx.conf')
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
@@ -115,12 +119,12 @@ if __name__ == "__main__":
     print("Install Java")
     ensure_jre_jdk(args.os_user)
 
-    try:
-        configure_keycloak()
-        print("installing Keycloak")
-    except Exception as err:
-        print("Failed keycloak install: " + str(err))
-        sys.exit(1)
+#    try:
+#        configure_keycloak()
+#        print("installing Keycloak")
+#    except Exception as err:
+#        print("Failed keycloak install: " + str(err))
+#        sys.exit(1)
 
     try:
         configure_nginx()
