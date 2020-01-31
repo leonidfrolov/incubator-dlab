@@ -59,13 +59,14 @@ def configure_keycloak():
     sudo('ln -s /opt/keycloak-' + keycloak_version + ' /opt/keycloak')
     sudo('chown ' + args.os_user + ':' + args.os_user + ' -R /opt/keycloak-' + keycloak_version)
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
+    sudo("mkdir /etc/keycloak")
     sudo("cp /tmp/keycloak.conf /etc/keycloak/keycloak.conf")
     sudo("cp /tmp/keycloak.service /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
     sudo("sed -i 's|WILDFLY_BIND=|WILDFLY_BIND=" + private_ip_address + "|' /etc/keycloak/keycloak.conf")
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
     sudo("systemctl daemon-reload")
-    sudo("systemctl enable keycloak-server")
+    sudo("systemctl enable keycloak")
     sudo('bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/' + args.keycloak_realm_name + '-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING -b ' + private_ip_address) #also starts standalone mode
 
 def configure_nginx():
