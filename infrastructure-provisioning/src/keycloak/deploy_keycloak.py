@@ -60,10 +60,12 @@ def configure_keycloak():
     sudo('ln -s /opt/keycloak-' + keycloak_version + ' /opt/keycloak')
     sudo('chown ' + args.os_user + ':' + args.os_user + ' -R /opt/keycloak-' + keycloak_version)
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
+    sudo("mkdir -p /etc/keycloak")
+    sudo("cp /tmp/keycloak.conf /etc/keycloak/keycloak.conf")
     sudo("cp /tmp/keycloak.service /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
-    sudo("sed -i 's|private_ip_address|" + private_ip_address + "|' /etc/systemd/system/keycloak.service")
-    sudo("sed -i 's|keycloak_realm_name|" + args.keycloak_realm_name + "|' /etc/systemd/system/keycloak.service")
+    sudo("sed -i 's|private_ip_address|" + private_ip_address + "|' /etc/keycloak/keycloak.conf")
+    sudo("sed -i 's|keycloak_realm_name|" + args.keycloak_realm_name + "|' /etc/keycloak/keycloak.conf")
     sudo("systemctl daemon-reload")
     sudo("systemctl enable keycloak")
     sudo("systemctl start keycloak")
@@ -93,6 +95,9 @@ if __name__ == "__main__":
         local('scp -i {} {}keycloak.service {}@{}:/tmp/keycloak.service'.format(args.keyfile, templates_dir,
                                                                                                       args.os_user,
                                                                                                       args.public_ip_address))
+        local('scp -i {} {}keycloak.conf {}@{}:/tmp/keycloak.conf'.format(args.keyfile, templates_dir,
+                                                                                   args.os_user,
+                                                                                   args.public_ip_address))
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
@@ -103,6 +108,7 @@ if __name__ == "__main__":
     else:
         put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
         put(templates_dir + 'keycloak.service', '/tmp/keycloak.service')
+        put(templates_dir + 'keycloak.conf', '/tmp/keycloak.conf')
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
