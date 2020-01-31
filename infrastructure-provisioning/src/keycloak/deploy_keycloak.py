@@ -127,7 +127,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     try:
- #       configure_nginx()
+        configure_nginx()
         print("installing nginx")
     except Exception as err:
         print("Failed nginx install: " + str(err))
