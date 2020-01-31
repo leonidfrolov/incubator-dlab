@@ -47,6 +47,7 @@ def ensure_jre_jdk(os_user):
     if not exists('/home/' + os_user + '/.ensure_dir/jre_jdk_ensured'):
         try:
             sudo('mkdir /home/ubuntu/.ensure_dir')
+            sudo('apt-get update')
             sudo('apt-get install -y default-jre')
             sudo('apt-get install -y default-jdk')
             sudo('touch /home/' + os_user + '/.ensure_dir/jre_jdk_ensured')
