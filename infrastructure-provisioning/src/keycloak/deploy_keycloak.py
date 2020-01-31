@@ -101,7 +101,7 @@ if __name__ == "__main__":
             sys.exit(1)
     else:
         put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
-        put(templates_dir + 'keycloak-server.service', '/etc/systemd/system/')
+        put(templates_dir + 'keycloak.service', '/etc/systemd/system/')
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
