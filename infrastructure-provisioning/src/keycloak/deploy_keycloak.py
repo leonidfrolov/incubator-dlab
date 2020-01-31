@@ -31,7 +31,9 @@ from dlab.edge_lib import install_nginx_lua
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--os_user', type=str, default='')
-parser.add_argument('--local_ip_address', type=str, default='')
+parser.add_argument('--private_ip_address', type=str, default='')
+parser.add_argument('--public_ip_address', type=str, default='')
+parser.add_argument('--hostname', type=str, default='')
 parser.add_argument('--keyfile', type=str, default='')
 parser.add_argument('--keycloak_realm_name', type=str, default='')
 parser.add_argument('--keycloak_user', type=str, default='')
@@ -40,6 +42,8 @@ args = parser.parse_args()
 
 keycloak_version = 8.0.1
 templates_dir = ./templates/
+external_port = 80
+internal_port = 8080
 
 def configure_keycloak()
     sudo('wget https://downloads.jboss.org/keycloak/' + keycloak_version + '/keycloak-' + keycloak_version + '.tar.gz')
@@ -49,15 +53,23 @@ def configure_keycloak()
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
     put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
-    sudo('bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/' + args.keycloak_realm_name + '-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING -b ' + args.local_ip_address) #also starts standalone mode
     put(templates_dir + 'keycloak.conf', '/etc/keycloak/keycloak.conf')
+    sudo("sed -i 's|WILDFLY_BIND=|WILDFLY_BIND=" + args.private_ip_address + "|' /etc/keycloak/keycloak.conf")
     put(templates_dir + 'keycloak-server.service', '/etc/systemd/system/keycloak.service')
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
     sudo("systemctl daemon-reload")
     sudo("systemctl enable keycloak-server")
+    sudo('bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/' + args.keycloak_realm_name + '-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING -b ' + args.private_ip_address) #also starts standalone mode
 
 def configure_nginx()
-
+    sudo('apt install -y nginx')
+    put(templates_dir + 'nginx.conf', '/etc/nginx/conf.d/nginx.conf')
+    sudo("sed -i 's|external_port|" + external_port + "|' /etc/nginx/conf.d/nginx.conf")
+    sudo("sed -i 's|internal_port|" + internal_port + "|' /etc/nginx/conf.d/nginx.conf")
+    sudo("sed -i 's|private_ip_address|" + args.private_ip_address + "|' /etc/nginx/conf.d/nginx.conf")
+    sudo("systemctl daemon-reload")
+    sudo("systemctl enable nginx")
+    sudo("systemctl start nginx")
 
 if __name__ == "__main__":
     local_log_filename = "{}_{}_{}.log".format(os.environ['conf_resource'],
@@ -72,7 +84,7 @@ if __name__ == "__main__":
     try:
         env['connection_attempts'] = 100
         env.key_filename = [args.keyfile]
-        env.host_string = '{}@{}'.format(args.os_user, args.ip_address)
+        env.host_string = '{}@{}'.format(args.os_user, args.public_ip_address)
     except Exception as err:
         print("Failed establish connection. Excpeption: " + str(err))
         sys.exit(1)
