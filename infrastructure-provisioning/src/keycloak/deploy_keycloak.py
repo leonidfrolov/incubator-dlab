@@ -84,24 +84,31 @@ if __name__ == "__main__":
 
     print("Configure connections")
     if args.public_ip_address != '':
+        local('scp {}realm.json -i {} {}@{}:/tmp/{}-realm.json'.format(templates_dir, args.keyfile, args.os_user,
+                                                                       args.public_ip_address,
+                                                                       args.keycloak_realm_name))
+        local('scp {}keycloak.conf -i {} {}@{}:/etc/keycloak/keycloak.conf'.format(templates_dir, args.keyfile,
+                                                                                   args.os_user,
+                                                                                   args.public_ip_address))
+        local('scp {}keycloak-server.service -i {} {}@{}:/etc/systemd/system/keycloak.service'.format(templates_dir,
+                                                                                                      args.keyfile,
+                                                                                                      args.os_user,
+                                                                                                      args.public_ip_address))
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
             env.host_string = '{}@{}'.format(args.os_user, args.public_ip_address)
-            local('scp {}realm.json -i {} {}@{}:/tmp/{}-realm.json'.format(templates_dir, args.keyfile, args.os_user,args.public_ip_address,args.keycloak_realm_name))
-            local('scp {}keycloak.conf -i {} {}@{}:/etc/keycloak/keycloak.conf'.format(templates_dir, args.keyfile,args.os_user,args.public_ip_address))
-            local('scp {}keycloak-server.service -i {} {}@{}:/etc/systemd/system/keycloak.service'.format(templates_dir,args.keyfile,args.os_user,args.public_ip_address))
         except Exception as err:
             print("Failed establish connection. Excpeption: " + str(err))
             sys.exit(1)
     else:
+        put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
+        put(templates_dir + 'keycloak.conf', '/etc/keycloak/keycloak.conf')
+        put(templates_dir + 'keycloak-server.service', '/etc/systemd/system/keycloak.service')
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
             env.host_string = '{}@{}'.format(args.os_user, private_ip_address)
-            put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
-            put(templates_dir + 'keycloak.conf', '/etc/keycloak/keycloak.conf')
-            put(templates_dir + 'keycloak-server.service', '/etc/systemd/system/keycloak.service')
         except Exception as err:
             print("Failed establish connection. Excpeption: " + str(err))
             sys.exit(1)
