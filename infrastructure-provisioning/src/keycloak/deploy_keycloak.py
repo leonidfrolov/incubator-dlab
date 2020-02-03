@@ -60,6 +60,9 @@ def configure_keycloak():
     sudo('ln -s /opt/keycloak-' + keycloak_version + ' /opt/keycloak')
     sudo('chown ' + args.os_user + ':' + args.os_user + ' -R /opt/keycloak-' + keycloak_version)
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
+    put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
+    put(templates_dir + 'keycloak.service', '/tmp/keycloak.service')
+    put(templates_dir + 'keycloak.service', '/etc/systemd/system/keycloak.service')
     sudo("cp /tmp/keycloak.service /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
@@ -71,6 +74,7 @@ def configure_keycloak():
 
 def configure_nginx():
     sudo('apt install -y nginx')
+    put(templates_dir + 'nginx.conf', '/tmp/nginx.conf')
     sudo("cp /tmp/nginx.conf /etc/nginx/conf.d/nginx.conf")
     sudo("sed -i 's|80|81|' /etc/nginx/sites-enabled/default")
     sudo("sed -i 's|external_port|" + external_port + "|' /etc/nginx/conf.d/nginx.conf")
@@ -90,15 +94,6 @@ if __name__ == "__main__":
 
     print("Configure connections")
     if args.public_ip_address != '':
-        local('scp -i {} {}realm.json {}@{}:/tmp/{}-realm.json'.format(args.keyfile, templates_dir, args.os_user,
-                                                                       args.public_ip_address,
-                                                                       args.keycloak_realm_name))
-        local('scp -i {} {}keycloak.service {}@{}:/tmp/keycloak.service'.format(args.keyfile, templates_dir,
-                                                                                                      args.os_user,
-                                                                                                      args.public_ip_address))
-        local('scp -i {} {}nginx.conf {}@{}:/tmp/nginx.conf'.format(args.keyfile, templates_dir,
-                                                                                                      args.os_user,
-                                                                                                      args.public_ip_address))
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
@@ -107,9 +102,6 @@ if __name__ == "__main__":
             print("Failed establish connection. Excpeption: " + str(err))
             sys.exit(1)
     else:
-        put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
-        put(templates_dir + 'keycloak.service', '/tmp/keycloak.service')
-        put(templates_dir + 'nginx.conf', '/tmp/nginx.conf')
         try:
             env['connection_attempts'] = 100
             env.key_filename = [args.keyfile]
