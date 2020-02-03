@@ -72,6 +72,7 @@ def configure_keycloak():
 def configure_nginx():
     sudo('apt install -y nginx')
     sudo("cp /tmp/nginx.conf /etc/nginx/conf.d/nginx.conf")
+    sudo("sed -i 's|80|81|' /etc/nginx/sites-enabled/default")
     sudo("sed -i 's|external_port|" + external_port + "|' /etc/nginx/conf.d/nginx.conf")
     sudo("sed -i 's|internal_port|" + internal_port + "|' /etc/nginx/conf.d/nginx.conf")
     sudo("sed -i 's|private_ip_address|" + private_ip_address + "|' /etc/nginx/conf.d/nginx.conf")
