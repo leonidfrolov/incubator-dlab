@@ -62,7 +62,6 @@ def configure_keycloak():
     sudo('/opt/keycloak/bin/add-user-keycloak.sh -r master -u ' + args.keycloak_user + ' -p ' + args.keycloak_user_password) #create initial admin user in master realm
     put(templates_dir + 'realm.json', '/tmp/' + args.keycloak_realm_name + '-realm.json')
     put(templates_dir + 'keycloak.service', '/tmp/keycloak.service')
-    put(templates_dir + 'keycloak.service', '/etc/systemd/system/keycloak.service')
     sudo("cp /tmp/keycloak.service /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|realm-name|" + args.keycloak_realm_name + "|' /tmp/" + args.keycloak_realm_name + "-realm.json")
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
