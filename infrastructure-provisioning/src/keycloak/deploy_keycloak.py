@@ -81,6 +81,7 @@ def configure_nginx():
     sudo("systemctl restart nginx")
 
 if __name__ == "__main__":
+    local("mkdir /logs/keycloak -p")
     local_log_filename = "keycloak_deployment_script.log"
     local_log_filepath = "/logs/keycloak/" + local_log_filename
     logging.basicConfig(format='%(levelname)-8s [%(asctime)s]  %(message)s',
