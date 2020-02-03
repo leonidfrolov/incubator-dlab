@@ -65,9 +65,9 @@ def configure_keycloak():
     sudo("sed -i 's|OS_USER|" + args.os_user + "|' /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|private_ip_address|" + private_ip_address + "|' /etc/systemd/system/keycloak.service")
     sudo("sed -i 's|keycloak_realm_name|" + args.keycloak_realm_name + "|' /etc/systemd/system/keycloak.service")
-#    sudo("systemctl daemon-reload")
-#    sudo("systemctl enable keycloak")
-#    sudo("systemctl start keycloak")
+    sudo("systemctl daemon-reload")
+    sudo("systemctl enable keycloak")
+    sudo("systemctl start keycloak")
 
 def configure_nginx():
     sudo('apt install -y nginx')
@@ -78,7 +78,7 @@ def configure_nginx():
     sudo("sed -i 's|private_ip_address|" + private_ip_address + "|' /etc/nginx/conf.d/nginx.conf")
     sudo("systemctl daemon-reload")
     sudo("systemctl enable nginx")
-    sudo("systemctl start nginx")
+    sudo("systemctl restart nginx")
 
 if __name__ == "__main__":
     local_log_filename = "keycloak_deployment_script.log"
