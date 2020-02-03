@@ -85,6 +85,7 @@ def configure_nginx():
 
 if __name__ == "__main__":
     local("sudo mkdir /logs/keycloak -p")
+    local('sudo chown ' + args.os_user + ':' + args.os_user + ' -R /logs/keycloak')
     local_log_filename = "keycloak_deployment_script.log"
     local_log_filepath = "/logs/keycloak/" + local_log_filename
     logging.basicConfig(format='%(levelname)-8s [%(asctime)s]  %(message)s',
