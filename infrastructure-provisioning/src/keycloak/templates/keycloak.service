@@ -27,7 +27,7 @@ Before=httpd.service
 [Service]
 Type=simple
 PIDFile=/var/run/keycloak/keycloak-%H.pid
-ExecStart=/opt/keycloak/bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=keycloak_realm_name -Dkeycloak.migration.strategy=IGNORE_EXISTING -b private_ip_address
+ExecStart=/opt/keycloak/bin/standalone.sh -Dkeycloak.migration.action=import -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=/tmp/keycloak_realm_name-realm.json -Dkeycloak.migration.strategy=IGNORE_EXISTING -b private_ip_address
 User=OS_USER
 Group=OS_USER
 WorkingDirectory=/opt/keycloak
