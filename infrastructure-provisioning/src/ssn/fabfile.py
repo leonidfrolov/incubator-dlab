@@ -36,8 +36,10 @@ def run():
     logging.basicConfig(format='%(levelname)-8s [%(asctime)s]  %(message)s',
                         level=logging.DEBUG,
                         filename=local_log_filepath)
+    ssn_config = dict()
+    ssn_config['unique_index'] =  str(uuid.uuid4())[:5]
     try:
-        local("~/scripts/{}.py".format('ssn_prepare'))
+        local("~/scripts/{}.py --unique_index {}".format('ssn_prepare', ssn_config['unique_index']))
     except Exception as err:
         traceback.print_exc()
         append_result("Failed preparing SSN node.", str(err))
