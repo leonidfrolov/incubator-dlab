@@ -29,7 +29,7 @@ import os
 from dlab.fab import *
 import traceback
 from dlab.meta_lib import *
-
+import uuid
 
 def run():
     local_log_filename = "{}_{}_{}.log".format(os.environ['conf_resource'], os.environ['project_name'],
@@ -39,7 +39,7 @@ def run():
                         level=logging.DEBUG,
                         filename=local_log_filepath)
     project_config = dict()
-    project_config['unique_index'] =  GCPMeta().get_index_by_service_account_name(args.service_account_name)
+    project_config['unique_index'] =  str(uuid.uuid4())[:5]
 
     try:
         local("~/scripts/{}.py --unique_index {}".format('project_prepare', ssn_config['unique_index']))
