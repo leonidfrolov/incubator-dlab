@@ -31,6 +31,7 @@ parser.add_argument('--service_account_name', type=str, default='')
 parser.add_argument('--role_name', type=str, default='')
 parser.add_argument('--policy_path', type=str, default='')
 parser.add_argument('--roles_path', type=str, default='')
+parser.add_argument('--unique_index', type=str, default='')
 args = parser.parse_args()
 
 
@@ -40,7 +41,7 @@ if __name__ == "__main__":
             print("REQUESTED SERVICE ACCOUNT {} ALREADY EXISTS".format(args.service_account_name))
         else:
             print("Creating Service account {}".format(args.service_account_name))
-            GCPActions().create_service_account(args.service_account_name)
+            GCPActions().create_service_account(args.service_account_name, args.unique_index)
             if GCPMeta().get_role(args.role_name):
                 if GCPMeta().get_role_status(args.role_name) == True:
                     print('Restoring deleted role')
