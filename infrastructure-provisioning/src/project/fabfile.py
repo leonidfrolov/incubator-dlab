@@ -28,6 +28,7 @@ import sys
 import os
 from dlab.fab import *
 import traceback
+from dlab.meta_lib import *
 
 
 def run():
@@ -37,9 +38,11 @@ def run():
     logging.basicConfig(format='%(levelname)-8s [%(asctime)s]  %(message)s',
                         level=logging.DEBUG,
                         filename=local_log_filepath)
+    project_config = dict()
+    project_config['unique_index'] =  GCPMeta().get_index_by_service_account_name(args.service_account_name)
 
     try:
-        local("~/scripts/{}.py".format('project_prepare'))
+        local("~/scripts/{}.py --unique_index {}".format('project_prepare', ssn_config['unique_index']))
     except Exception as err:
         traceback.print_exc()
         append_result("Failed preparing Project.", str(err))
@@ -53,7 +56,7 @@ def run():
 #        sys.exit(1)
 
     try:
-        local("~/scripts/{}.py".format('edge_configure'))
+        local("~/scripts/{}.py --unique_index {}".format('edge_configure', ssn_config['unique_index']))
     except Exception as err:
         traceback.print_exc()
         append_result("Failed configuring Edge node.", str(err))
