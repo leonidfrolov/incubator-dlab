@@ -226,7 +226,8 @@ class GCPMeta:
             traceback.print_exc(file=sys.stdout)
 
     def get_service_account(self, service_account_name):
-        service_account_email = "{}@{}.iam.gserviceaccount.com".format(service_account_name, self.project)
+        unique_index = GCPMeta().get_index_by_service_account_name(service_account_name)
+        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_name, unique_index, self.project)
         request = self.service_iam.projects().serviceAccounts().get(
             name='projects/{}/serviceAccounts/{}'.format(self.project, service_account_email))
         try:
@@ -243,6 +244,30 @@ class GCPMeta:
                                "error_message": str(err) + "\n Traceback: " + traceback.print_exc(
                                    file=sys.stdout)}))
             traceback.print_exc(file=sys.stdout)
+
+    def get_index_by_service_account_name(self, service_account_name):
+        request = self.service_iam.projects().serviceAccounts().list(
+            name='projects/{}'.format(self.project))
+        try:
+            result = request.execute()
+            for service_account in result['accounts']:
+                if service_account['displayName'] == service_account_name:
+                    service_account_email = service_account['email']
+                    break
+                else:
+                    service_account = None
+            unique_index = service_account_email[len(service_account_name + "-"):service_account_email.find('@')]
+            return unique_index
+
+        except Exception as err:
+            logging.info(
+                "Unable to get index from service account email: " + str(err) + "\n Traceback: " + traceback.print_exc(
+                    file=sys.stdout))
+            append_result(str({"error": "Unable to get index from service account email",
+                               "error_message": str(err) + "\n Traceback: " + traceback.print_exc(
+                                   file=sys.stdout)}))
+            traceback.print_exc(file=sys.stdout)
+
 
     def get_role(self, role_name):
         request = self.service_iam.projects().roles().get(name='projects/{}/roles/{}'.format(self.project,
