@@ -27,7 +27,11 @@ from dlab.meta_lib import *
 import sys, time, os
 from dlab.actions_lib import *
 import traceback
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--unique_index', type=str, default='')
+args = parser.parse_args()
 
 if __name__ == "__main__":
     local_log_filename = "{}_{}_{}.log".format(os.environ['conf_resource'], os.environ['project_name'],
@@ -39,6 +43,7 @@ if __name__ == "__main__":
 
     print('Generating infrastructure names and tags')
     project_conf = dict()
+    project_conf['unique_index'] = args.unique_index
     project_conf['service_base_name'] = (os.environ['conf_service_base_name']).lower().replace('_', '-')
     project_conf['key_name'] = os.environ['conf_key_name']
     project_conf['user_keyname'] = os.environ['project_name']
@@ -63,12 +68,12 @@ if __name__ == "__main__":
     project_conf['private_subnet_prefix'] = os.environ['conf_private_subnet_prefix']
     project_conf['edge_service_account_name'] = '{}-{}-edge'.format(project_conf['service_base_name'],
                                                                  project_conf['project_name'])
-    project_conf['edge_role_name'] = '{}-{}-edge'.format(project_conf['service_base_name'],
-                                                      project_conf['project_name'])
+    project_conf['edge_role_name'] = '{}-{}-{}-edge'.format(project_conf['service_base_name'],
+                                                      project_conf['project_name'], project_conf['unique_index'])
     project_conf['ps_service_account_name'] = '{}-{}-ps'.format(project_conf['service_base_name'],
                                                              project_conf['project_name'])
-    project_conf['ps_role_name'] = '{}-{}-ps'.format(project_conf['service_base_name'],
-                                                  project_conf['project_name'])
+    project_conf['ps_role_name'] = '{}-{}-{}-ps'.format(project_conf['service_base_name'],
+                                                  project_conf['project_name'], project_conf['unique_index'])
     project_conf['ps_policy_path'] = '/root/files/ps_policy.json'
     project_conf['ps_roles_path'] = '/root/files/ps_roles.json'
     project_conf['instance_name'] = '{0}-{1}-{2}-edge'.format(project_conf['service_base_name'],
@@ -148,8 +153,8 @@ if __name__ == "__main__":
     try:
         logging.info('[CREATE SERVICE ACCOUNT AND ROLE FOR EDGE NODE]')
         print('[CREATE SERVICE ACCOUNT AND ROLE FOR EDGE NODE]')
-        params = "--service_account_name {} --role_name {}".format(project_conf['edge_service_account_name'],
-                                                                   project_conf['edge_role_name'])
+        params = "--service_account_name {} --role_name {} --unique_index {}".format(project_conf['edge_service_account_name'],
+                                                                   project_conf['edge_role_name'], project_conf['unique_index'])
 
         try:
             local("~/scripts/{}.py {}".format('common_create_service_account', params))
@@ -170,9 +175,9 @@ if __name__ == "__main__":
     try:
         logging.info('[CREATE SERVICE ACCOUNT AND ROLE FOR PRIVATE SUBNET]')
         print('[CREATE SERVICE ACCOUNT AND ROLE FOR NOTEBOOK NODE]')
-        params = "--service_account_name {} --role_name {} --policy_path {} --roles_path {}".format(
+        params = "--service_account_name {} --role_name {} --policy_path {} --roles_path {} --unique_index {}".format(
             project_conf['ps_service_account_name'], project_conf['ps_role_name'],
-            project_conf['ps_policy_path'], project_conf['ps_roles_path'])
+            project_conf['ps_policy_path'], project_conf['ps_roles_path'], project_conf['unique_index'])
 
         try:
             local("~/scripts/{}.py {}".format('common_create_service_account', params))
