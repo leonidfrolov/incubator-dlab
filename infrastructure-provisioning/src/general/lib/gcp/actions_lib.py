@@ -559,7 +559,7 @@ class GCPActions:
         request = GCPActions().service_resource.projects().getIamPolicy(resource=self.project, body={})
         project_policy = request.execute()
         unique_index = meta_lib.GCPMeta().get_index_by_service_account_name(service_account_name)
-        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_id, unique_index, self.project)
+        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_name, unique_index, self.project)
         params = {
             "role": "projects/{}/roles/{}".format(self.project, role_name.replace('-', '_')),
             "members": [
