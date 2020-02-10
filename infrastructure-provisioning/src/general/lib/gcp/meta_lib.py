@@ -257,6 +257,8 @@ class GCPMeta:
                         unique_index = service_account_email[
                                        len(service_account_name):service_account_email.find('@')]
                         return unique_index
+                else:
+                    return ''
             else:
                 return ''
 
