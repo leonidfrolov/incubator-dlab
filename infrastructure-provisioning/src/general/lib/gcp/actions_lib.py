@@ -291,7 +291,7 @@ class GCPActions:
         key = RSA.importKey(open(ssh_key_path, 'rb').read())
         ssh_key = key.publickey().exportKey("OpenSSH")
         unique_index = meta_lib.GCPMeta().get_index_by_service_account_name(service_account_name)
-        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_id, unique_index,
+        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_name, unique_index,
                                                                           self.project)
         access_configs = ''
         if instance_class == 'ssn' or instance_class == 'edge':
@@ -511,7 +511,7 @@ class GCPActions:
 
     def remove_service_account(self, service_account_name):
         unique_index = meta_lib.GCPMeta().get_index_by_service_account_name(service_account_name)
-        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_id, unique_index, self.project)
+        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_name, unique_index, self.project)
         request = self.service_iam.projects().serviceAccounts().delete(
             name='projects/{}/serviceAccounts/{}'.format(self.project, service_account_email))
         try:
@@ -693,7 +693,7 @@ class GCPActions:
 
     def set_service_account_to_instance(self, service_account_name, instance_name):
         unique_index = meta_lib.GCPMeta().get_index_by_service_account_name(service_account_name)
-        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_id, unique_index, self.project)
+        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_name, unique_index, self.project)
         params = {
             "email": service_account_email
         }
@@ -822,7 +822,7 @@ class GCPActions:
     def set_bucket_owner(self, bucket_name, service_account):
         try:
             unique_index = meta_lib.GCPMeta().get_index_by_service_account_name(service_account_name)
-            service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_id, unique_index, self.project)
+            service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_name, unique_index, self.project)
             bucket = self.storage_client.get_bucket(bucket_name)
             # setting bucket owner
             acl = bucket.acl
