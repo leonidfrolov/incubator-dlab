@@ -250,14 +250,15 @@ class GCPMeta:
             name='projects/{}'.format(self.project))
         try:
             result = request.execute()
-            for service_account in result['accounts']:
-                if service_account['displayName'] == service_account_name:
-                    service_account_email = service_account['email']
-                    unique_index = service_account_email[
-                                   len(service_account_name + "-"):service_account_email.find('@')]
-                    return unique_index
-                else:
-                    service_account = None
+            if result:
+                for service_account in result.get('accounts'):
+                    if service_account['displayName'] == service_account_name:
+                        service_account_email = service_account['email']
+                        unique_index = service_account_email[
+                                       len(service_account_name + "-"):service_account_email.find('@')]
+                        return unique_index
+            else:
+                return ''
 
         except Exception as err:
             logging.info(
