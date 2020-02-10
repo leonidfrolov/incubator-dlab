@@ -253,11 +253,11 @@ class GCPMeta:
             for service_account in result['accounts']:
                 if service_account['displayName'] == service_account_name:
                     service_account_email = service_account['email']
-                    break
+                    unique_index = service_account_email[
+                                   len(service_account_name + "-"):service_account_email.find('@')]
+                    return unique_index
                 else:
                     service_account = None
-            unique_index = service_account_email[len(service_account_name + "-"):service_account_email.find('@')]
-            return unique_index
 
         except Exception as err:
             logging.info(
