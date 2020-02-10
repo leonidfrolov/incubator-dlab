@@ -227,7 +227,7 @@ class GCPMeta:
 
     def get_service_account(self, service_account_name):
         unique_index = GCPMeta().get_index_by_service_account_name(service_account_name)
-        service_account_email = "{}-{}@{}.iam.gserviceaccount.com".format(service_account_name, unique_index, self.project)
+        service_account_email = "{}{}@{}.iam.gserviceaccount.com".format(service_account_name, unique_index, self.project)
         request = self.service_iam.projects().serviceAccounts().get(
             name='projects/{}/serviceAccounts/{}'.format(self.project, service_account_email))
         try:
