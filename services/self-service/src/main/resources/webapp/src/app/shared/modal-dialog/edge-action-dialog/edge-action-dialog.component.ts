@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import {Component, Inject, OnDestroy} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 
@@ -8,7 +8,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   <div id="dialog-box" *ngIf="data.type">
     <header class="dialog-header">
       <h4 class="modal-title"><span class="action">{{data.type | titlecase}}</span> edge node</h4>
-      <button type="button" class="close" (click)="closeModal()">&times;</button>
+      <button type="button" class="close" (click)="this.dialogRef.close()">&times;</button>
     </header>
       <div mat-dialog-content class="content message mat-dialog-content">
           <h3 class="strong">Select the edge nodes you want to {{data.type}}</h3>
@@ -32,7 +32,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
       <p class="m-top-20 action-text"><span class="strong">Do you want to proceed?</span></p>
 
       <div class="text-center m-top-30 m-bott-30">
-        <button type="button" class="butt" mat-raised-button (click)="closeModal()">No</button>
+        <button type="button" class="butt" mat-raised-button (click)="this.dialogRef.close()">No</button>
         <button type="button" class="butt butt-success" mat-raised-button (click)="dialogRef.close(endpointsNewStatus)" [disabled]="!endpointsNewStatus.length">Yes</button>
       </div>
       </div>
@@ -51,24 +51,19 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
     .action{text-transform: capitalize}
     .action-text { text-align: center; }
     .scrolling-content{overflow-y: auto; max-height: 200px; }
-    label { font-size: 15px; font-weight: 500; font-family: "Open Sans",sans-serif; cursor: pointer; display: flex; align-items: center;}
+    label { font-size: 15px; font-weight: 300; font-family: "Open Sans",sans-serif; cursor: pointer; display: flex; align-items: center; padding-left: 10px}
     label input {margin-top: 2px; margin-right: 10px;cursor: pointer;}
-    .all{font-size: 16px; font-weight: 600;}
+    .all{font-size: 16px; padding-left: 0; font-weight: 500}
     .scrolling-content{overflow-y: auto; max-height: 200px;}
   `]
 })
 
-export class EdgeActionDialogComponent {
+export class EdgeActionDialogComponent implements OnDestroy {
   public endpointsNewStatus: Array<object> = [];
   public isAllChecked: boolean;
   constructor(
     public dialogRef: MatDialogRef<EdgeActionDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-  }
-
-  private closeModal() {
-    this.dialogRef.close();
-    this.data.item.forEach(endpoint => endpoint.checked = false);
   }
 
   public endpointAction() {
@@ -80,8 +75,17 @@ export class EdgeActionDialogComponent {
     if (this.isAllChecked) {
       this.data.item.forEach(endpoint => endpoint.checked = true);
     } else {
-      this.data.item.forEach(endpoint => endpoint.checked = false);
+      this.clearCheckedNodes();
     }
     this.endpointAction();
+  }
+
+  public clearCheckedNodes() {
+    this.data.item.forEach(endpoint => endpoint.checked = false);
+  }
+
+  ngOnDestroy(): void {
+    this.clearCheckedNodes();
+    this.isAllChecked = false;
   }
 }
