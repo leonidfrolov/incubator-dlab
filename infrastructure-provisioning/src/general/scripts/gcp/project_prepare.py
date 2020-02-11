@@ -157,6 +157,7 @@ if __name__ == "__main__":
                                                                    project_conf['edge_role_name'], project_conf['unique_index'])
 
         try:
+            print("parameters for common_create_service_account: " + params)
             local("~/scripts/{}.py {}".format('common_create_service_account', params))
         except:
             traceback.print_exc()

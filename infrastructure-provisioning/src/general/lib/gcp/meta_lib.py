@@ -256,6 +256,7 @@ class GCPMeta:
                     if service_account['displayName'] == service_account_name:
                         service_account_email = service_account['email']
                         response = service_account_email[len(service_account_name):service_account_email.find('@')]
+                        print("-------------response:" + response)
                 return response
             else:
                 return response
